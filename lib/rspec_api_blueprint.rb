@@ -5,6 +5,7 @@ RSpec.configure do |config|
   config.add_setting :api_docs_output,      default: 'doc/api'
   config.add_setting :api_docs_controllers, default: 'app/controllers'
   config.add_setting :api_docs_models,      default: 'app/models'
+  config.add_setting :api_docs_autorun,     default: true
   config.add_setting :api_docs_whitelist,   default: false
 
   api_docs_folder_path = nil
@@ -21,9 +22,10 @@ RSpec.configure do |config|
   end
 
   RESOURCE_GROUP = /Group\s(\w+)/
-  ACTION_GROUP = /(GET|POST|PATCH|PUT|DELETE)\s(.+)$/
+  ACTION_GROUP   = /(GET|POST|PATCH|PUT|DELETE)\s(.+)$/
 
   config.after(:each) do
+    next unless config.api_docs_autorun
     next if example.metadata[:docs] == false
     next if config.api_docs_whitelist && !example.metadata[:docs]
 
