@@ -1,16 +1,14 @@
 require "rspec_api_blueprint/version"
 require "rspec_api_blueprint/string_extensions"
 
-
 RSpec.configure do |config|
-  config.add_setting :api_docs_output, default: 'api_docs'
+  config.add_setting :api_docs_output,      default: 'doc/api'
   config.add_setting :api_docs_controllers, default: 'app/controllers'
-  config.add_setting :api_docs_models, default: 'app/models'
-  config.add_setting :api_docs_whitelist, default: false
-  config.alias_example_to :docs, docs: true
+  config.add_setting :api_docs_models,      default: 'app/models'
+  config.add_setting :api_docs_whitelist,   default: false
 
   api_docs_folder_path = nil
-  touched_files = {}
+  touched_files        = {}
 
   config.before(:suite) do
     if defined? Rails
@@ -19,7 +17,7 @@ RSpec.configure do |config|
       api_docs_folder_path = File.join(File.expand_path('.'), config.api_docs_output)
     end
 
-    Dir.mkdir(api_docs_folder_path) unless Dir.exists?(api_docs_folder_path)
+    FileUtils.mkdir_p(api_docs_folder_path) unless Dir.exists?(api_docs_folder_path)
   end
 
   RESOURCE_GROUP = /Group\s(\w+)/
@@ -48,7 +46,7 @@ RSpec.configure do |config|
     file_name = resource_name.underscore
 
     file = File.join(api_docs_folder_path, "#{file_name}.md")
-    
+
     new_file = false
     if !touched_files[file_name]
       File.delete(file) if File.exists?(file)
