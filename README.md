@@ -174,7 +174,8 @@ Configuration options:
 
 ## Caveats
 
-- 401, 403 and 301 statuses are ignored since rspec produces a undesired output. TODO: Add option to choose ignored statuses.
+* 401, 403 and 301 statuses are ignored since rspec produces a undesired output. TODO: Add option to choose ignored statuses.
+* [rack-test](https://github.com/brynary/rack-test) (typically used for testing Sinatra apps) doesn't support reading request body. [rspec-rails](https://github.com/rspec/rspec-rails) does not have this limitation.
 
 ## Contributing
 

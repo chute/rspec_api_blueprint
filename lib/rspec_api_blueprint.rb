@@ -12,7 +12,7 @@ RSpec.configure do |config|
   touched_files        = {}
 
   config.before(:suite) do
-    if defined? Rails
+    if defined?(Rails) && Rails.root
       api_docs_folder_path = File.join(Rails.root, config.api_docs_output)
     else
       api_docs_folder_path = File.join(File.expand_path('.'), config.api_docs_output)
@@ -24,7 +24,7 @@ RSpec.configure do |config|
   RESOURCE_GROUP = /Group\s(\w+)/
   ACTION_GROUP   = /(GET|POST|PATCH|PUT|DELETE)\s(.+)$/
 
-  config.after(:each) do
+  config.after(:each) do |example|
     next unless config.api_docs_autorun
     next if example.metadata[:docs] == false
     next if config.api_docs_whitelist && !example.metadata[:docs]
@@ -59,7 +59,7 @@ RSpec.configure do |config|
     File.open(file, 'a+') do |f|
       # Resource
       if new_file
-        f.puts "# Group #{resource_name}\n\n"
+        f.puts "# Group #{resource_name}\n"
 
         f.puts resource_comment
       end
@@ -101,8 +101,12 @@ RSpec.configure do |config|
       # Response
       f.puts "+ Response #{response.status} (#{response.content_type})\n\n"
 
-      if response.body.present? && response.content_type.include?('application/json')
-        f.puts "#{JSON.pretty_generate(JSON.parse(response.body))}\n\n".indent(4)
+      if response.body.present?
+        begin
+          f.puts "#{JSON.pretty_generate(JSON.parse(response.body))}\n\n".indent(4)
+        rescue JSON::ParserError
+          f.puts "#{response.body}\n\n".indent(4)
+        end
       end
     end unless response.status == 401 || response.status == 403 || response.status == 301
   end
