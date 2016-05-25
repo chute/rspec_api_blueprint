@@ -120,7 +120,7 @@ RSpec.configure do |config|
 
     begin
       match = example_group[:description_args].first.match(regex)
-      example_group = example_group[:example_group] unless match
+      example_group = example_group[:parent_example_group] unless match
     end while !match && example_group
 
     return example_group, match
