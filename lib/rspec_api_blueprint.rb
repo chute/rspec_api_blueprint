@@ -29,8 +29,8 @@ RSpec.configure do |config|
     next if example.metadata[:docs] == false
     next if config.api_docs_whitelist && !example.metadata[:docs]
 
-    response ||= last_response || @response
-    request ||= last_request || @request
+    response ||= (respond_to?(:response) ? self.response : nil) || @response
+    request ||= (respond_to?(:request) ? self.request : nil) || @request
 
     next unless response
 
@@ -119,7 +119,7 @@ RSpec.configure do |config|
     group = nil
 
     begin
-      match = example_group[:description_args].first.match(regex)
+      match = example_group[:description_args].first.to_s.match(regex)
       example_group = example_group[:parent_example_group] unless match
     end while !match && example_group
 
